@@ -6,6 +6,7 @@ use std::num;
 
 const TODO_INDEX: usize = 0;
 
+#[derive(Debug)]
 pub struct TodoList{
     todos: Vec<Todo>
 }
@@ -25,7 +26,8 @@ impl TodoList {
             new_title = String::from("No title yet...")
         }
         self.todos.insert(TODO_INDEX,Todo::new(new_title));
-        println!("{:?}",self.todos)
+        println!("{:?}",self.todos);
+        run(self);
     }
 }
 
@@ -65,15 +67,27 @@ fn show_menu(){
     )
 }
 
+fn show_actual_todo(todolist: TodoList){
+    for todo in &todolist.todos {
+        println!("---------------------");
+        println!("title:{}\n",todo.title);
+        println!("id:{} \n",todo.id);
+        println!("---------------------");
+    }
+    thread::sleep(Duration::from_secs(2));
+    run(todolist);
+}
+
 
 fn check_matching(user_input:String,todolist: TodoList){
     if user_input.trim() == String::from("1") {
         TodoList::create_todo(todolist)
+    }else if user_input.trim() == String::from("4") {
+        show_actual_todo(todolist)
     }
 }
 
-fn run(){
-    let todolist = init_todo();
+fn run(todolist: TodoList){
     println!("What action to do with your todolist?");
     show_menu();
     let mut user_input: String = String::new();
@@ -83,5 +97,6 @@ fn run(){
 
 
 fn main() {
-    run()
+    let todolist = init_todo();
+    run(todolist)
 }
