@@ -33,11 +33,12 @@ impl TodoList {
          run(self,todo_index)
     }
 
-    fn modify_todo(&mut self,todo_index:usize){
+    fn edit_todo(&mut self,todo_index:usize){
         show_actual_todo(self,false,todo_index);
+        println!("Which one to edit?");
         let mut todo_id = String::new();
         stdin().read_line(&mut todo_id).unwrap();
-        Todo::modify(self,todo_id);
+        Todo::edit(self,todo_id);
         run(self,todo_index)
     }
 
@@ -71,14 +72,29 @@ impl Todo {
             id:todo_index
         }
     }
-    fn remove(todo_list: &mut TodoList, todo_id: String){
+    fn remove(todolist: &mut TodoList, todo_id: String){
         println!("Which one to remove?");
         let todo_id_parsed:usize = todo_id.trim().parse().unwrap();
-        if let Some(index) = todo_list.todos.iter().position(|n| n.id == todo_id_parsed){
-            todo_list.todos.remove(index);
+        if let Some(index) = todolist.todos.iter().position(|n| n.id == todo_id_parsed){
+            todolist.todos.remove(index);
             println!("removed the todo!")
         }else {
             println!("Invalid value")
+        }
+    }
+
+    fn edit(todolist: &mut TodoList, todo_id:String){
+        let todo_id_parsed:usize = todo_id.trim().parse().unwrap();
+        if let Some(index) = todolist.todos.iter().position(|n| n.id == todo_id_parsed){
+            println!("What's the new title?");
+            let mut new_title = String::new();
+            stdin().read_line(&mut new_title).unwrap();
+            if !&new_title.is_empty() {
+                todolist.todos[index].title = new_title;
+                println!("your todo has been edited!");
+            }else {
+                println!("Invalid value")
+            }
         }
     }
     
@@ -97,7 +113,7 @@ fn show_menu(){
         --------------------\n
         | 1:Add a todo     |\n
         | 2:Remove a todo  |\n
-        | 3:Modify a todo  |\n
+        | 3:Edit a todo    |\n
         | 4:Show todolist  |\n
         | 5:Reset todolist |\n
         | 6:Quit           |\n
@@ -128,7 +144,7 @@ fn check_matching(user_input:String, todolist: &mut TodoList, todo_index:usize){
         TodoList::remove_todo(todolist,todo_index)
     }
     else if user_input.trim() == String::from("3") {
-        TodoList::modify_todo(todolist,todo_index)
+        TodoList::edit_todo(todolist,todo_index)
     }
     else if user_input.trim() == String::from("4") {
         show_actual_todo(todolist,true,todo_index)
