@@ -24,13 +24,21 @@ impl TodoList {
          todo_index+=1;
         run(self,todo_index);
     }
-    
+
      fn remove_todo(&mut self,todo_index:usize){
          show_actual_todo(self,false,todo_index);
          let mut todo_id = String::new();
          stdin().read_line(&mut todo_id).unwrap();
          Todo::remove(self, todo_id);
          run(self,todo_index)
+    }
+
+    fn modify_todo(&mut self,todo_index:usize){
+        show_actual_todo(self,false,todo_index);
+        let mut todo_id = String::new();
+        stdin().read_line(&mut todo_id).unwrap();
+        Todo::modify(self,todo_id);
+        run(self,todo_index)
     }
 
     fn reset_todolist(&mut self, todo_index:usize){
@@ -120,6 +128,7 @@ fn check_matching(user_input:String, todolist: &mut TodoList, todo_index:usize){
         TodoList::remove_todo(todolist,todo_index)
     }
     else if user_input.trim() == String::from("3") {
+        TodoList::modify_todo(todolist,todo_index)
     }
     else if user_input.trim() == String::from("4") {
         show_actual_todo(todolist,true,todo_index)
