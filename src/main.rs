@@ -25,6 +25,7 @@ impl TodoList {
         run(self,todo_index);
     }
 
+    
      fn remove_todo(&mut self,todo_index:usize){
          show_actual_todo(self,false,todo_index);
          let mut todo_id = String::new();
