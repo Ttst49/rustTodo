@@ -32,6 +32,23 @@ impl TodoList {
          Todo::remove(self, todo_id);
          run(self,todo_index)
     }
+
+    fn reset_todolist(&mut self, todo_index:usize){
+        println!("you sure? (y/n)");
+        let mut user_answer = String::new();
+        stdin().read_line(&mut user_answer).unwrap();
+        if
+                user_answer.trim() == "y"
+                    || user_answer.trim() == "yes"
+                    || user_answer.trim() == "Yes"
+        {
+            println!("clearing...");
+            self.todos.clear();
+        }else {
+            println!("Cancelling")
+        }
+        run(self,todo_index)
+    }
 }
 
  struct Todo{
@@ -73,8 +90,9 @@ fn show_menu(){
         | 1:Add a todo     |\n
         | 2:Remove a todo  |\n
         | 3:Modify a todo  |\n
-        | 4:Show todolist |\n
+        | 4:Show todolist  |\n
         | 5:Reset todolist |\n
+        | 6:Quit           |\n
         --------------------\n
      "
     )
@@ -101,8 +119,20 @@ fn check_matching(user_input:String, todolist: &mut TodoList, todo_index:usize){
     else if user_input.trim() == String::from("2") {
         TodoList::remove_todo(todolist,todo_index)
     }
+    else if user_input.trim() == String::from("3") {
+    }
     else if user_input.trim() == String::from("4") {
         show_actual_todo(todolist,true,todo_index)
+    }
+    else if user_input.trim() == String::from("5") {
+        TodoList::reset_todolist(todolist,todo_index)
+    }
+    else if user_input.trim() == String::from("6") {
+        println!("See ya")
+    }
+    else {
+        println!("You have to give a valid input!");
+        run(todolist,todo_index);
     }
 }
 
