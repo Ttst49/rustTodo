@@ -1,49 +1,62 @@
 use std::io::{stdin};
 use std::thread;
 use std::time::Duration;
-use rand;
-use std::num;
 
-const TODO_INDEX: usize = 0;
-
-#[derive(Debug)]
-pub struct TodoList{
+ struct TodoList{
     todos: Vec<Todo>
 }
 
 impl TodoList {
-    pub fn new()->TodoList{
+     fn new()->TodoList{
         TodoList{
             todos:Vec::new()
         }
     }
 
-    pub fn create_todo(mut self){
+     fn create_todo(&mut self, mut todo_index:usize){
         println!("What title for this todo?");
         let mut new_title = String::new();
         stdin().read_line(&mut new_title).unwrap();
         if new_title.is_empty() {
             new_title = String::from("No title yet...")
         }
-        self.todos.insert(TODO_INDEX,Todo::new(new_title));
-        println!("{:?}",self.todos);
-        run(self);
+        self.todos.insert(todo_index,Todo::new(new_title,todo_index));
+         todo_index+=1;
+        run(self,todo_index);
+    }
+
+     fn remove_todo(&mut self,todo_index:usize){
+         show_actual_todo(self,false,todo_index);
+         let mut todo_id = String::new();
+         stdin().read_line(&mut todo_id).unwrap();
+         Todo::remove(self, todo_id);
+         run(self,todo_index)
     }
 }
 
-#[derive(Debug)]
-pub struct Todo{
+ struct Todo{
     title:String,
-    id:i64
+    id:usize
 }
 
 impl Todo {
-    pub fn new(title:String)->Todo{
+    fn new(title:String,todo_index:usize)->Todo{
         Todo{
             title: title.trim().to_string(),
-            id:rand::random()
+            id:todo_index
         }
     }
+    fn remove(todo_list: &mut TodoList, todo_id: String){
+        println!("Which one to remove?");
+        let todo_id_parsed:usize = todo_id.trim().parse().unwrap();
+        if let Some(index) = todo_list.todos.iter().position(|n| n.id == todo_id_parsed){
+            todo_list.todos.remove(index);
+            println!("removed the todo!")
+        }else {
+            println!("Invalid value")
+        }
+    }
+    
 }
 
 fn init_todo()->TodoList{
@@ -67,36 +80,43 @@ fn show_menu(){
     )
 }
 
-fn show_actual_todo(todolist: TodoList){
+fn show_actual_todo(todolist: &mut TodoList,from_menu:bool,todo_index:usize){
     for todo in &todolist.todos {
         println!("---------------------");
         println!("title:{}\n",todo.title);
         println!("id:{} \n",todo.id);
         println!("---------------------");
     }
-    thread::sleep(Duration::from_secs(2));
-    run(todolist);
-}
-
-
-fn check_matching(user_input:String,todolist: TodoList){
-    if user_input.trim() == String::from("1") {
-        TodoList::create_todo(todolist)
-    }else if user_input.trim() == String::from("4") {
-        show_actual_todo(todolist)
+    if from_menu {
+        thread::sleep(Duration::from_secs(2));
+        run(todolist,todo_index);
     }
 }
 
-fn run(todolist: TodoList){
+
+fn check_matching(user_input:String, todolist: &mut TodoList, todo_index:usize){
+    if user_input.trim() == String::from("1") {
+        TodoList::create_todo(todolist, todo_index)
+    }
+    else if user_input.trim() == String::from("2") {
+        TodoList::remove_todo(todolist,todo_index)
+    }
+    else if user_input.trim() == String::from("4") {
+        show_actual_todo(todolist,true,todo_index)
+    }
+}
+
+fn run(todolist: &mut TodoList, todo_index:usize){
     println!("What action to do with your todolist?");
     show_menu();
     let mut user_input: String = String::new();
     stdin().read_line(& mut user_input).unwrap();
-    check_matching(user_input,todolist);
+    check_matching(user_input,todolist,todo_index);
 }
 
 
 fn main() {
-    let todolist = init_todo();
-    run(todolist)
+    let todo_index: usize = 0;
+    let mut todolist = init_todo();
+    run(&mut todolist,todo_index)
 }
