@@ -137,27 +137,18 @@ fn show_actual_todo(todolist: &mut TodoList,from_menu:bool,todo_index:usize){
 
 
 fn check_matching(user_input:String, todolist: &mut TodoList, todo_index:usize){
-    if user_input.trim() == String::from("1") {
-        TodoList::create_todo(todolist, todo_index)
-    }
-    else if user_input.trim() == String::from("2") {
-        TodoList::remove_todo(todolist,todo_index)
-    }
-    else if user_input.trim() == String::from("3") {
-        TodoList::edit_todo(todolist,todo_index)
-    }
-    else if user_input.trim() == String::from("4") {
-        show_actual_todo(todolist,true,todo_index)
-    }
-    else if user_input.trim() == String::from("5") {
-        TodoList::reset_todolist(todolist,todo_index)
-    }
-    else if user_input.trim() == String::from("6") {
-        println!("See ya")
-    }
-    else {
-        println!("You have to give a valid input!");
-        run(todolist,todo_index);
+
+    match user_input.trim() {
+        "1"=>{TodoList::create_todo(todolist, todo_index)},
+        "2"=>{TodoList::remove_todo(todolist,todo_index)},
+        "3"=>{TodoList::edit_todo(todolist,todo_index)},
+        "4"=>{show_actual_todo(todolist,true,todo_index)},
+        "5"=>{TodoList::reset_todolist(todolist,todo_index)},
+        "6"=>{println!("See ya")},
+        _=>{
+            println!("You have to give a valid input!");
+            run(todolist,todo_index)
+        }
     }
 }
 
