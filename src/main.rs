@@ -1,6 +1,7 @@
 use std::io::{stdin};
 use std::thread;
 use std::time::Duration;
+use postgres::{Client, NoTls, Error};
 
  struct TodoList{
     todos: Vec<Todo>
@@ -162,7 +163,16 @@ fn run(todolist: &mut TodoList, todo_index:usize){
 
 
 fn main() {
+
+    connect_to_database();
     let todo_index: usize = 0;
     let mut todolist = init_todo();
     run(&mut todolist,todo_index)
+}
+
+fn connect_to_database() {
+    let mut client
+        = Client::connect("postgresql://todorustuser:postgres@todorust/library", NoTls)?;
+    
+
 }
