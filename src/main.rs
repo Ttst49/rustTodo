@@ -1,8 +1,7 @@
-use std::fmt::Error;
 use std::io::{stdin};
 use std::thread;
 use std::time::Duration;
-use postgres::{Client, NoTls, Row};
+use postgres::{Client, NoTls};
 
 struct TodoList{
     todos: Vec<Todo>
