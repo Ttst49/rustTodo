@@ -2,7 +2,7 @@ use std::fmt::Error;
 use std::io::{stdin};
 use std::thread;
 use std::time::Duration;
-use postgres::{Client, NoTls};
+use postgres::{Client, NoTls, Row};
 
 struct TodoList{
     todos: Vec<Todo>
@@ -174,7 +174,22 @@ fn main() {
 fn connect_to_database() -> Result<(), postgres::Error> {
     let mut client
         = Client::connect("postgresql://todorustuser:postgres@localhost/todorust", NoTls)?;
-    let test = client.batch_execute("SELECT * FROM todo");
-   println!("{}", test.iter().count());
-    test
+
+    for row in client.query("
+        SELECT id,title FROM todo
+    ",&[])?{
+        let (id,title) : (i32,Option<String>)
+            = (row.get (0), row.get (1));
+
+        if id.is_positive() && title.is_some () {
+
+            let todo = Todo{
+                id: id as usize,
+                title: title.unwrap(),
+            };
+            println!("{} {}", todo.id, todo.title);
+
+        }
+    }
+    Ok(())
 }
