@@ -171,8 +171,10 @@ fn main() {
     //run(&mut todolist,todo_index)
 }
 
-fn connect_to_database()->Result<(),Error>{
+fn connect_to_database() -> Result<(), postgres::Error> {
     let mut client
-        = Client::connect("postgresql://todorustuser:postgres@todorust/library", NoTls);
-    client.batch_execute("SELECT * FROM todo")
+        = Client::connect("postgresql://todorustuser:postgres@localhost/todorust", NoTls)?;
+    let test = client.batch_execute("SELECT * FROM todo");
+   println!("{}", test.iter().count());
+    test
 }
