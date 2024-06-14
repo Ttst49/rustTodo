@@ -1,7 +1,6 @@
 use std::io::{stdin};
 use std::thread;
 use std::time::Duration;
-use postgres::{Client, NoTls};
 
 struct TodoList{
     todos: Vec<Todo>
@@ -103,7 +102,7 @@ impl Todo {
 
 fn init_todo()->TodoList{
     println!("Wait...");
-    thread::sleep(Duration::from_secs(2));
+    thread::sleep(Duration::from_secs(1));
     println!("Todolist created!");
     return TodoList::new()
 }
@@ -163,32 +162,7 @@ fn run(todolist: &mut TodoList, todo_index:usize){
 
 
 fn main() {
-
-    connect_to_database();
-    //let todo_index: usize = 0;
-    //let mut todolist = init_todo();
-    //run(&mut todolist,todo_index)
-}
-
-fn connect_to_database() -> Result<(), postgres::Error> {
-    let mut client
-        = Client::connect("postgresql://todorustuser:postgres@localhost/todorust", NoTls)?;
-
-    for row in client.query("
-        SELECT id,title FROM todo
-    ",&[])?{
-        let (id,title) : (i32,Option<String>)
-            = (row.get (0), row.get (1));
-
-        if id.is_positive() && title.is_some () {
-
-            let todo = Todo{
-                id: id as usize,
-                title: title.unwrap(),
-            };
-            println!("{} {}", todo.id, todo.title);
-
-        }
-    }
-    Ok(())
+    let todo_index: usize = 0;
+    let mut todolist = init_todo();
+    run(&mut todolist,todo_index)
 }
